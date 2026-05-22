@@ -15,6 +15,9 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  background:
+    linear-gradient(135deg, rgba(34, 124, 138, 0.10), rgba(242, 248, 246, 0) 38%),
+    #eef2f1;
 }
 
 button,
@@ -29,7 +32,7 @@ button {
 
 .app-shell {
   min-height: 100vh;
-  padding: 24px;
+  padding: 28px;
 }
 
 .app-header {
@@ -49,7 +52,7 @@ button {
 
 .brand-mark {
   align-items: center;
-  background: #0d3138;
+  background: linear-gradient(145deg, #0d3138, #1f7882);
   border-radius: 8px;
   color: #f5fbfb;
   display: inline-flex;
@@ -78,7 +81,7 @@ h1 {
 }
 
 .status-pill {
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.82);
   border: 1px solid #d7dfdf;
   border-radius: 999px;
   color: #365054;
@@ -107,10 +110,11 @@ h1 {
 .control-section,
 .metric-strip,
 .plot-section {
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.92);
   border: 1px solid #dbe3e3;
   border-radius: 8px;
   box-shadow: 0 20px 50px rgba(27, 47, 54, 0.08);
+  backdrop-filter: blur(14px);
 }
 
 .upload-panel,
@@ -204,6 +208,7 @@ h2 {
 .text-button,
 .secondary-button,
 .primary-button,
+.icon-label-button,
 .icon-button {
   align-items: center;
   border: 0;
@@ -217,6 +222,16 @@ h2 {
   color: #217786;
   font-weight: 700;
   padding: 7px 4px;
+}
+
+.icon-label-button {
+  background: #e6f3f2;
+  color: #176a76;
+  font-size: 0.84rem;
+  font-weight: 760;
+  gap: 6px;
+  min-height: 34px;
+  padding: 0 10px;
 }
 
 .channel-list {
@@ -332,6 +347,15 @@ h2 {
   width: 30px;
 }
 
+.icon-button input {
+  display: none;
+}
+
+.button-cluster {
+  display: inline-flex;
+  gap: 7px;
+}
+
 .plot-section {
   display: grid;
   grid-template-rows: auto minmax(520px, 1fr);
@@ -347,6 +371,27 @@ h2 {
   justify-content: space-between;
   min-width: 0;
   padding: 18px 20px;
+}
+
+.plot-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.plot-actions span {
+  align-items: center;
+  background: #edf4f3;
+  border: 1px solid #d8e4e3;
+  border-radius: 999px;
+  color: #31565c;
+  display: inline-flex;
+  font-size: 0.78rem;
+  font-weight: 720;
+  gap: 5px;
+  min-height: 30px;
+  padding: 0 10px;
 }
 
 .plot-header > div {
@@ -427,5 +472,9 @@ h2 {
     align-items: flex-start;
     flex-direction: column;
     gap: 8px;
+  }
+
+  .plot-actions {
+    justify-content: flex-start;
   }
 }

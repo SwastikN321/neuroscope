@@ -5,12 +5,12 @@ from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from eeg_loader import EEGParseError, parse_eeg_csv
+from eeg_loader import EEGParseError, parse_eeg_file
 
 
 app = FastAPI(
     title="NeuroScope API",
-    description="Small FastAPI backend for parsing EEG CSV uploads.",
+    description="FastAPI backend for parsing EEG CSV and EDF uploads.",
     version="0.1.0",
 )
 
@@ -35,13 +35,10 @@ def health() -> dict[str, str]:
 
 @app.post("/api/eeg/upload")
 async def upload_eeg(file: UploadFile = File(...)):
-    if not file.filename.lower().endswith(".csv"):
-        raise HTTPException(status_code=400, detail="Please upload a CSV file.")
-
     contents = await file.read()
 
     try:
-        return parse_eeg_csv(contents, file.filename)
+        return parse_eeg_file(contents, file.filename)
     except EEGParseError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 

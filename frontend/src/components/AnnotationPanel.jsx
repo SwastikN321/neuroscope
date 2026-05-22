@@ -1,4 +1,4 @@
-import { Plus, Trash2 } from "lucide-react";
+import { Download, Plus, Trash2, Upload } from "lucide-react";
 import { ANNOTATION_TYPES } from "../utils/eeg.js";
 
 export default function AnnotationPanel({
@@ -6,6 +6,8 @@ export default function AnnotationPanel({
   draft,
   onDraftChange,
   onAdd,
+  onExport,
+  onImport,
   onRemove,
   onUseViewport
 }) {
@@ -15,6 +17,23 @@ export default function AnnotationPanel({
         <div>
           <p className="eyebrow">Annotations</p>
           <h2>Intervals</h2>
+        </div>
+        <div className="button-cluster">
+          <label className="icon-button" aria-label="Import annotations">
+            <Upload size={16} aria-hidden="true" />
+            <input
+              type="file"
+              accept="application/json,.json"
+              onChange={(event) => {
+                const file = event.target.files?.[0];
+                if (file) onImport(file);
+                event.target.value = "";
+              }}
+            />
+          </label>
+          <button type="button" className="icon-button" aria-label="Export annotations" onClick={onExport}>
+            <Download size={16} aria-hidden="true" />
+          </button>
         </div>
       </div>
 
@@ -70,7 +89,7 @@ export default function AnnotationPanel({
             <div key={annotation.id} className="annotation-row">
               <span className="annotation-swatch" style={{ background: config.stroke }} />
               <span>
-                {config.label} {annotation.start} - {annotation.end}
+                {config.label} {annotation.start}s - {annotation.end}s
               </span>
               <button
                 type="button"

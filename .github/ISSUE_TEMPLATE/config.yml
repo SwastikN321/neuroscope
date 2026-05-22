@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: NeuroScope security or sensitive data concern
+    url: https://github.com/SwastikN321/neuroscope/security
+    about: Please avoid posting private patient data in public issues.

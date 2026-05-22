@@ -17,18 +17,9 @@ jobs:
         run: pip install -r backend/requirements.txt
       - name: Compile backend
         run: python -m py_compile backend/main.py backend/eeg_loader.py
-      - name: Smoke test parser
-        run: |
-          cd backend
-          python - <<'PY'
-          from eeg_loader import parse_eeg_csv
-
-          with open("../sample_data/sample_eeg.csv", "rb") as sample:
-              data = parse_eeg_csv(sample.read(), "sample_eeg.csv")
-
-          assert data["metadata"]["channelCount"] == 6
-          assert data["metadata"]["sampleCount"] == 31
-          PY
+      - name: Run backend tests
+        run: pytest
+        working-directory: backend
 
   frontend:
     runs-on: ubuntu-latest

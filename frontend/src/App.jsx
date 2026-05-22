@@ -5,8 +5,13 @@ import ChannelSelector from "./components/ChannelSelector.jsx";
 import EegPlot from "./components/EegPlot.jsx";
 import MetricStrip from "./components/MetricStrip.jsx";
 import UploadPanel from "./components/UploadPanel.jsx";
-import { uploadEegCsv } from "./utils/api.js";
-import { getChannelNames } from "./utils/eeg.js";
+import { uploadEegFile } from "./utils/api.js";
+import {
+  buildAnnotationExport,
+  createDemoDataset,
+  getChannelNames,
+  validateImportedAnnotations
+} from "./utils/eeg.js";
 
 const initialDraft = {
   start: "",
@@ -25,23 +30,46 @@ export default function App() {
 
   const channels = useMemo(() => getChannelNames(dataset), [dataset]);
 
+  function loadDataset(parsed) {
+    const nextChannels = getChannelNames(parsed);
+    setDataset(parsed);
+    setSelectedChannels(nextChannels);
+    setAnnotations([]);
+    setDraft(initialDraft);
+    setViewport(null);
+  }
+
   async function handleUpload(file) {
     setIsLoading(true);
     setError("");
 
     try {
-      const parsed = await uploadEegCsv(file);
-      const nextChannels = getChannelNames(parsed);
-      setDataset(parsed);
-      setSelectedChannels(nextChannels);
-      setAnnotations([]);
-      setDraft(initialDraft);
-      setViewport(null);
+      const parsed = await uploadEegFile(file);
+      loadDataset(parsed);
     } catch (uploadError) {
       setError(uploadError.message);
     } finally {
       setIsLoading(false);
     }
+  }
+
+  function handleLoadDemo() {
+    loadDataset(createDemoDataset());
+    setAnnotations([
+      {
+        id: crypto.randomUUID(),
+        start: 3.4,
+        end: 4.8,
+        type: "seizure"
+      },
+      {
+        id: crypto.randomUUID(),
+        start: 7.2,
+        end: 7.7,
+        type: "artifact"
+      }
+    ]);
+    setError("");
   }
 
   function toggleChannel(channel) {
@@ -84,6 +112,29 @@ export default function App() {
     }));
   }
 
+  function exportAnnotations() {
+    const payload = buildAnnotationExport(dataset, annotations);
+    const blob = new Blob([JSON.stringify(payload, null, 2)], {
+      type: "application/json"
+    });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${dataset?.filename || "neuroscope"}-annotations.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+  }
+
+  async function importAnnotations(file) {
+    try {
+      const payload = JSON.parse(await file.text());
+      setAnnotations(validateImportedAnnotations(payload));
+      setError("");
+    } catch (importError) {
+      setError(importError.message || "Could not import annotation JSON.");
+    }
+  }
+
   return (
     <main className="app-shell">
       <header className="app-header">
@@ -96,12 +147,17 @@ export default function App() {
             <p>Research-focused EEG review</p>
           </div>
         </div>
-        <div className="status-pill">{dataset ? dataset.filename : "Awaiting CSV"}</div>
+        <div className="status-pill">{dataset ? dataset.filename : "Awaiting recording"}</div>
       </header>
 
       <div className="workspace">
         <aside className="sidebar">
-          <UploadPanel onUpload={handleUpload} isLoading={isLoading} error={error} />
+          <UploadPanel
+            onUpload={handleUpload}
+            onLoadDemo={handleLoadDemo}
+            isLoading={isLoading}
+            error={error}
+          />
           <MetricStrip dataset={dataset} />
           <ChannelSelector
             channels={channels}
@@ -114,6 +170,8 @@ export default function App() {
             draft={draft}
             onDraftChange={setDraft}
             onAdd={addAnnotation}
+            onExport={exportAnnotations}
+            onImport={importAnnotations}
             onRemove={(id) =>
               setAnnotations((current) => current.filter((annotation) => annotation.id !== id))
             }

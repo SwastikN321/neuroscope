@@ -1,4 +1,5 @@
 import Plot from "react-plotly.js";
+import { Download, MoveHorizontal, ZoomIn } from "lucide-react";
 import { ANNOTATION_TYPES, normalizeChannel } from "../utils/eeg.js";
 
 export default function EegPlot({ dataset, selectedChannels, annotations, onViewportChange }) {
@@ -47,6 +48,11 @@ export default function EegPlot({ dataset, selectedChannels, annotations, onView
         <div>
           <p className="eyebrow">{dataset?.filename || "No file loaded"}</p>
           <h2>Stacked EEG traces</h2>
+        </div>
+        <div className="plot-actions" aria-label="Plot capabilities">
+          <span><ZoomIn size={15} aria-hidden="true" /> Zoom</span>
+          <span><MoveHorizontal size={15} aria-hidden="true" /> Pan</span>
+          <span><Download size={15} aria-hidden="true" /> PNG</span>
         </div>
       </div>
 

@@ -1,6 +1,6 @@
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "";
 
-export async function uploadEegCsv(file) {
+export async function uploadEegFile(file) {
   const formData = new FormData();
   formData.append("file", file);
 
@@ -12,7 +12,7 @@ export async function uploadEegCsv(file) {
   const payload = await response.json().catch(() => ({}));
 
   if (!response.ok) {
-    throw new Error(payload.detail || "Unable to parse the EEG CSV file.");
+    throw new Error(payload.detail || "Unable to parse the EEG file.");
   }
 
   return payload;
